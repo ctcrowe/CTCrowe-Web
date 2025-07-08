@@ -1,0 +1,51 @@
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+  margin: 0;
+  min-height: 100dvh;
+  position: relative;
+  color: #333333;
+  overflow-x:hidden;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding-top: 20dvh;
+  overflow-y:scroll;
+}
+
+.name {
+  font-size: max(10dvh, 28px);
+}
+
+.resume-data {
+  font-size: max(2.5dvh, 14px);
+  padding-top: 1dvh;
+}
+
+.description {
+  height: 200px;
+  background-color: #536878;
+  width: 75dvw;
+  padding-top: 5vw;
+  border-radius: 25px;
+  color: #f0f0f0;
+
+}
+
+.sign-off {
+  padding-top: 5dvh;
+  font-size: max(5dvh, 20px);
+}
