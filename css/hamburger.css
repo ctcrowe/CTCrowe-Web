@@ -92,6 +92,7 @@
   min-height: 100dvh;
   font-size: max(2dvh, 12px);
   text-align: right;
+  direction:ltr;
   overflow-x: hidden;
 }
 
