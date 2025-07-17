@@ -4,6 +4,5 @@
     @import url(css/arch.css);
   </style>
   <path class="wall" d="M 360 276 l -60 0"/>
-  <path class="test" d="M 330 276 l -30 0 l 0 -216 l 0 120 l 96 0"
-    stroke-width="6" fill="none" stroke="black" stroke-linecap="square"/>
+  <path class="wall" d="M 300 276 l 0 -216"/>
 </svg>
