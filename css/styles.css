@@ -39,8 +39,10 @@ body {
 }
 
 .image-test {
-  width:60dvw;
-  align-items: center;
+  width: 60dvw !important;
+  height: auto !important;
+  display: block;
+  margin: 0 auto;
 }
 
 .description {
