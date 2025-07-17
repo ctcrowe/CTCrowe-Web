@@ -31,10 +31,6 @@
   cursor: pointer;
 }
 
-.sidebar {
-  text-align: end !important;
-}
-
 .hamburger-menu:has(input:checked) {
   --background: #333;
 }
@@ -95,7 +91,7 @@
   height: 100dvh;
   min-height: 100dvh;
   font-size: max(2dvh, 12px);
-  text-align: end;
+  text-align: right;
   overflow-x: hidden;
 }
 
