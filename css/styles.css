@@ -38,6 +38,11 @@ body {
   padding-top: 1dvh;
 }
 
+.image-test {
+  width:60dvw
+  align-items: center;
+}
+
 .description {
   height: 200px;
   background-color: #536878;
