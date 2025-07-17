@@ -1,5 +1,6 @@
 .wall {
   fill: none;
-  stroke: 6;
+  stroke-width: 6;
+  stroke: black;
   stroke-linecap: square;
 }
