@@ -41,7 +41,8 @@ function buildTable() {
 
     tr.innerHTML = `
       <td>${row.id ?? ""}</td>
-      <td>${row.manufacturer ?? ""}</td>;
+      <td>${row.manufacturer ?? ""}</td>
+    `;
 
     tableBody.appendChild(tr);
   });
