@@ -3,7 +3,7 @@ const jsonFiles = [
   "./json/mfr.json",
 ];
 
-const tableBody = document.querySelector("#data-table tbody");
+const tableBody = document.querySelector("#product-data tbody");
 
 // Store merged data by ID
 const mergedData = {};
@@ -41,10 +41,7 @@ function buildTable() {
 
     tr.innerHTML = `
       <td>${row.id ?? ""}</td>
-      <td>${row.manufacturer ?? ""}</td>
-      <td>${row.model ?? ""}</td>
-      <td>${row.year ?? ""}</td>
-    `;
+      <td>${row.manufacturer ?? ""}</td>;
 
     tableBody.appendChild(tr);
   });
