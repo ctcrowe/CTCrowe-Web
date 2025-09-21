@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <svg version="1.1" height="480" width="1320" xmlns="http://www.w3.org/2000/svg">
   <style>
-    @import url(./css/arch.css);
+    .wall {
+      stroke: black;
+      stroke-width: 4;
+      fill: none;
+    }
   </style>
   <path class="wall" d="M 360 276 l -60 0"/>
   <path class="wall" d="M 300 276 l 0 -216"/>
