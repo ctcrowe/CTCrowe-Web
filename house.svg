@@ -11,4 +11,5 @@
   <path class="wall" d="M 300 276 l 0 -216"/>
   <path class="wall" d="M 300 60 l 400 0"/>
   <path class="wall" d="M 700 60 l 0 360"/>
+  <path class="wall" d="M 700 420 l -340 0"/>
 </svg>
