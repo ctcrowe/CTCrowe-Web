@@ -9,4 +9,5 @@
   </style>
   <path class="wall" d="M 360 276 l -60 0"/>
   <path class="wall" d="M 300 276 l 0 -216"/>
+  <path class="wall" d="M 300 60 l 0 400"/>
 </svg>
