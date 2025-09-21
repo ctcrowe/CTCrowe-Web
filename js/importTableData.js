@@ -1,6 +1,6 @@
 // List of JSON files
 const jsonFiles = [
-  "/json/mfr.json"
+  "json/mfr.json"
 ];
 
 const tableBody = document.querySelector("#product-data tbody");
