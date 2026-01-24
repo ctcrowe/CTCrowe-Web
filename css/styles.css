@@ -53,7 +53,7 @@ html, body {
   background-color: #536878;  
 }
 
-.gif {
+.gifs {
   width: 25dvw;
   margin-top:10px;
   background-color: #f0f0f0;
@@ -72,6 +72,7 @@ html, body {
   padding-top: 5dvh;
   font-size: max(5dvh, 20px);
 }
+
 
 
 
