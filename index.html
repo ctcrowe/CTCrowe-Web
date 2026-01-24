@@ -34,8 +34,8 @@
     </div>
     <div class="blogging">
       <image class="gifs" source src="gif/GridlineLocator.gif" />
-      <div class="description">
-      Natively tracking where elements are in a model would be handled better by a parameter so that this information can be scheduled and found by more novice users. I frequently find that while working with beginners, they place many elements that they immediately "can't find" or lose track of. To fix this. I've implemented an IUpdater via the Revit api that tracks the locations of every element in your model in real time while you are working in the model and relays that back to a parameter, "CLOSEST GRID".
+      <div>
+        Natively tracking where elements are in a model would be handled better by a parameter so that this information can be scheduled and found by more novice users. I frequently find that while working with beginners, they place many elements that they immediately "can't find" or lose track of. To fix this. I've implemented an IUpdater via the Revit api that tracks the locations of every element in your model in real time while you are working in the model and relays that back to a parameter, "CLOSEST GRID". The same updater confirms that the parameter is inside of the model and caches all gridline locations for quick processing.
         To prevent failures inside of the model due to working in unwanted transactions. A failures processor is attached to the model as well, which prevents triggering whenever the processor finds an unwanted transaction name. This prevents failing or creating issues when syncronizing with central or opening models that could otherwise occur.
       </div>
     </div>
@@ -58,6 +58,7 @@
   <script src="js/importTableData.js"></script>
 </body>
 </html>
+
 
 
 
