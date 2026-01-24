@@ -45,6 +45,14 @@ html, body {
   margin: 0 auto;
 }
 
+.blogging {
+  height: auto;
+  width: 75dvw;
+  padding-top:3vw;
+  margin-top:15px;
+  background-color: #536878;  
+}
+
 .description {
   height: 200px;
   background-color: #536878;
@@ -52,10 +60,10 @@ html, body {
   padding-top: 5vw;
   border-radius: 25px;
   color: #f0f0f0;
-
 }
 
 .sign-off {
   padding-top: 5dvh;
   font-size: max(5dvh, 20px);
 }
+
