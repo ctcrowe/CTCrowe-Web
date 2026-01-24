@@ -54,6 +54,7 @@ html, body {
   margin-bottom: 10px;
   background-color: #536878;
   color: #f0f0f0;
+  text-align: left;
 }
 
 .gifs {
@@ -75,6 +76,7 @@ html, body {
   padding-top: 5dvh;
   font-size: max(5dvh, 20px);
 }
+
 
 
 
