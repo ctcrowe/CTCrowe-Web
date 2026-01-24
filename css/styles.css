@@ -49,7 +49,8 @@ html, body {
   height: auto;
   width: 75dvw;
   padding-top:3vw;
-  margin-top:15px;
+  margin-top:10px;
+  margin-bottom: 10px;
   background-color: #536878;  
 }
 
@@ -57,7 +58,8 @@ html, body {
   width: 100%;
   max-width: 70dvw;
   height: auto;
-  margin-top:10px;
+  margin-top:5px;
+  margin-bottom:5px;
   background-color: #f0f0f0;
 }
 
@@ -74,6 +76,7 @@ html, body {
   padding-top: 5dvh;
   font-size: max(5dvh, 20px);
 }
+
 
 
 
