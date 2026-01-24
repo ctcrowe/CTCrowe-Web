@@ -53,6 +53,12 @@ html, body {
   background-color: #536878;  
 }
 
+.gif {
+  width: 60dvw;
+  margin-top:10px;
+  background-color: #f0f0f0;
+}
+
 .description {
   height: 200px;
   background-color: #536878;
@@ -66,4 +72,5 @@ html, body {
   padding-top: 5dvh;
   font-size: max(5dvh, 20px);
 }
+
 
