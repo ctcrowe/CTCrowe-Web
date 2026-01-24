@@ -54,7 +54,9 @@ html, body {
 }
 
 .gifs {
-  width: 25dvw;
+  width: 100%;
+  max-width: 600px;
+  height: auto;
   margin-top:10px;
   background-color: #f0f0f0;
 }
@@ -72,6 +74,7 @@ html, body {
   padding-top: 5dvh;
   font-size: max(5dvh, 20px);
 }
+
 
 
 
