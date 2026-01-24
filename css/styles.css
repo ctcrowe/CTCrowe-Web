@@ -52,7 +52,8 @@ html, body {
   padding-bottom: 3vw;
   margin-top: 10px;
   margin-bottom: 10px;
-  background-color: #536878;  
+  background-color: #536878;
+  color: #f0f0f0;
 }
 
 .gifs {
@@ -74,6 +75,7 @@ html, body {
   padding-top: 5dvh;
   font-size: max(5dvh, 20px);
 }
+
 
 
 
