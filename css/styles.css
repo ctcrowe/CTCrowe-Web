@@ -49,6 +49,7 @@ html, body {
   height: auto;
   width: 75dvw;
   padding-top:3vw;
+  padding-bottom: 3vw;
   margin-top: 10px;
   margin-bottom: 10px;
   background-color: #536878;  
@@ -73,6 +74,7 @@ html, body {
   padding-top: 5dvh;
   font-size: max(5dvh, 20px);
 }
+
 
 
 
