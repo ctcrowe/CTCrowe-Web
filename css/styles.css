@@ -49,16 +49,13 @@ html, body {
   height: auto;
   width: 75dvw;
   padding-top:3vw;
-  margin-top:10px;
-  margin-bottom: 10px;
+  margin: 10 0
   background-color: #536878;  
 }
 
 .gifs {
   width: 90%
   height: auto;
-  margin-top:5px;
-  margin-bottom:5px;
   background-color: #f0f0f0;
 }
 
@@ -75,6 +72,7 @@ html, body {
   padding-top: 5dvh;
   font-size: max(5dvh, 20px);
 }
+
 
 
 
