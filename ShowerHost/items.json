@@ -1,5 +1,65 @@
 [
   {
+    "emoji": "🦆",
+    "name": "Mold-Free Rubber Duck Thermometer",
+    "desc": "A rubber duck that <em>tells you the bath temp</em> — because your elbow apparently can't be trusted. Also claims to be mold-free, which raises questions about all the other ducks.",
+    "price": 14.99
+  },
+  {
+    "emoji": "🍑",
+    "name": "Frida Baby Windi Gas Passer",
+    "desc": "A tiny tube you insert... where the sun doesn't shine... to release trapped gas. Yes. This is a real product. <em>Yes, parents actually buy this.</em>",
+    "price": 16.99
+  },
+  {
+    "emoji": "👃",
+    "name": "NoseFrida SnotSucker Nasal Aspirator",
+    "desc": "You put one end in the baby's nose and the OTHER end in <em>your mouth</em> and suck. There's a filter. They promise. Baby loves it. Parents question their life choices.",
+    "price": 21.99
+  },
+  {
+    "emoji": "🎵",
+    "name": "Bluetooth Pregnancy Belly Headphones",
+    "desc": "Wrap speakers around your bump so your unborn baby can enjoy <em>Mozart, podcasts, or honestly whatever you're into.</em> Studies on effectiveness are \"mixed.\"",
+    "price": 39.99
+  },
+  {
+    "emoji": "🤱",
+    "name": "Haakaa Manual Silicone Breast Pump",
+    "desc": "A silicone blob with no moving parts that collects milk <em>purely through suction and vibes.</em> Somehow has 50,000+ 5-star reviews. Parents lose their minds over it.",
+    "price": 12.99
+  },
+  {
+    "emoji": "💩",
+    "name": "Diaper Genie Complete Pail",
+    "desc": "A fancy trash can — but make it <em>specifically for poop.</em> Uses proprietary bag refills so you're locked in forever. Smells surprisingly not-terrible.",
+    "price": 44.99
+  },
+  {
+    "emoji": "🌀",
+    "name": "Baby Shusher Sleep Miracle Sound Machine",
+    "desc": "A hockey-puck-sized device that just <em>shushes your baby over and over,</em> louder than you expected, until they pass out. Desperate parents swear by it.",
+    "price": 32.99
+  },
+  {
+    "emoji": "🩺",
+    "name": "Owlet Dream Sock Baby Monitor",
+    "desc": "A WiFi-connected sock that monitors your baby's heart rate and oxygen levels <em>while they sleep</em> and sends alerts to your phone. For the parent who needs data on everything.",
+    "price": 149.0
+  },
+  {
+    "emoji": "🪑",
+    "name": "4moms mamaRoo4 Infant Swing",
+    "desc": "A space-age baby swing with <em>5 unique motion settings</em> named things like \"car ride\" and \"kangaroo.\" Connects to Bluetooth. Costs more than some people's car payment.",
+    "price": 249.99
+  },
+  {
+    "emoji": "🧴",
+    "name": "Frida Baby 3-in-1 Nose, Nail & Ear Picker Set",
+    "desc": "A full kit dedicated to <em>extracting things from small holes on your baby's face.</em> Comes with special tools, a light, and the confidence of a tiny surgeon.",
+    "price": 19.99
+  },
+  {
     "emoji": "🪣",
     "name": "Munchkin Sterilizer Microwave Bags",
     "desc": "Throw your bottle parts in a ziplock-looking bag, nuke it for 90 seconds, and call it sterile. <em>Each bag is reusable up to 20 times</em> — because nothing says \"parenting\" like tracking your bag's use count.",
@@ -97,7 +157,7 @@
   },
   {
     "emoji": "🪆",
-    "name": "Skip Hop Explore & More Baby's View Activity Center",
+    "name": "Skip Hop Explore & More Activity Center",
     "desc": "An enormous plastic activity saucer with <em>26 ways to play,</em> a rotating seat, lights, music, and enough stimulation to mildly overwhelm an adult. Folds flat. Barely.",
     "price": 89.99
   },
@@ -118,5 +178,125 @@
     "name": "Frida Baby 2-in-1 Postpartum Peri Bottle",
     "desc": "A <em>curved squirt bottle</em> for postpartum recovery that is angled so you don't have to contort yourself. Simple concept. Life-changing execution. Every nurse recommends it.",
     "price": 14.99
+  },
+  {
+    "emoji": "🧸",
+    "name": "Lovevery The Play Gym",
+    "desc": "A $140 play mat designed by child development experts with <em>specific toys for each developmental stage.</em> Comes with a booklet explaining why each wooden ring matters. Parents feel very seen by this.",
+    "price": 140.0
+  },
+  {
+    "emoji": "🫧",
+    "name": "Dapple Baby Bottle & Dish Soap",
+    "desc": "Dish soap marketed <em>exclusively for baby items,</em> free of fragrance, dyes, and apparently everything that makes soap fun. Costs 3x regular Dawn. Parents buy it without hesitation.",
+    "price": 8.99
+  },
+  {
+    "emoji": "🪵",
+    "name": "Wooden Baby Gym with Rings & Beads",
+    "desc": "A minimalist wooden arch with dangly toys that costs <em>significantly more than the plastic version</em> because it matches your Scandinavian nursery aesthetic. Worth it, apparently.",
+    "price": 54.99
+  },
+  {
+    "emoji": "🧷",
+    "name": "Magnetic Me Footie Pajamas",
+    "desc": "Pajamas that use <em>magnets instead of snaps</em> so you can change a diaper at 3am without accidentally snapping the wrong thing and starting over. Revolutionary. Embarrassingly obvious in hindsight.",
+    "price": 36.0
+  },
+  {
+    "emoji": "🎪",
+    "name": "Baby Einstein Take Along Tunes Musical Toy",
+    "desc": "A small plastic toy that plays <em>classical music clips on a loop</em> forever, at volumes you cannot adjust, until the battery dies or you hide it under the couch cushions. Babies love it.",
+    "price": 11.99
+  },
+  {
+    "emoji": "🪤",
+    "name": "Wubbanub Pacifier Plush",
+    "desc": "A pacifier with a <em>small stuffed animal attached</em> so it's harder to lose and easier for baby to grab. The giraffe is the most popular. There is also a manatee. The manatee deserves more attention.",
+    "price": 14.99
+  },
+  {
+    "emoji": "🧺",
+    "name": "Ubbi Steel Diaper Pail",
+    "desc": "A steel diaper pail with a <em>sliding lid that seals in odors</em> without proprietary bags — takes regular trash bags. Costs more upfront, saves a fortune on refills. The sensible choice.",
+    "price": 79.99
+  },
+  {
+    "emoji": "🫀",
+    "name": "Fridababy MediFrida the Accu-Dose Pacifier",
+    "desc": "A pacifier with a <em>medicine syringe built into the handle</em> so you can sneak liquid medicine into a baby who refuses it. Devious. Genius. 4.8 stars.",
+    "price": 9.99
+  },
+  {
+    "emoji": "🌙",
+    "name": "Nested Bean Zen Sack Classic",
+    "desc": "A sleep sack with a <em>small weighted pad over the chest</em> that mimics the feeling of a parent's hand. Babies sleep longer. Parents cry grateful tears into their cold coffee.",
+    "price": 34.0
+  },
+  {
+    "emoji": "🐟",
+    "name": "Skip Hop Moby Waterfall Bath Rinser",
+    "desc": "A cup with a <em>soft silicone edge that presses against baby's forehead</em> so water runs away from their eyes during rinse. Simple. Effective. Why didn't this exist sooner.",
+    "price": 13.99
+  },
+  {
+    "emoji": "📦",
+    "name": "Honest Company Diaper & Wipe Bundle",
+    "desc": "A subscription box of <em>diapers with cute patterns</em> that cost more than regular diapers but arrive at your door and have avocados on them. The avocado print alone accounts for $4.",
+    "price": 79.99
+  },
+  {
+    "emoji": "🎠",
+    "name": "Fisher-Price Deluxe Kick & Play Piano Gym",
+    "desc": "A play mat where babies <em>kick a piano with their feet</em> and it makes noise. Sounds chaotic. Is chaotic. Baby develops leg muscles and rhythm simultaneously.",
+    "price": 49.99
+  },
+  {
+    "emoji": "🧬",
+    "name": "Munchkin Latch Transition Trainer Sippy Cup",
+    "desc": "A sippy cup <em>shaped like a breast</em> to ease the transition from nursing. The product exists. The name is \"Latch.\" Everyone at the baby shower will have opinions.",
+    "price": 8.99
+  },
+  {
+    "emoji": "🪞",
+    "name": "Baby Einstein Sea Dreams Soother",
+    "desc": "A crib attachment with a <em>glowing dome, ocean sounds, and slow-moving sea creatures</em> that plays for 30 minutes. Baby watches fish. You eat dinner with two hands.",
+    "price": 49.99
+  },
+  {
+    "emoji": "🎯",
+    "name": "Infantino Flip 4-in-1 Convertible Carrier",
+    "desc": "A convertible baby carrier for <em>newborns through toddlers</em> at a fraction of the Ergobaby price. Does 95% of the same job. The other 5% is a logo.",
+    "price": 39.99
+  },
+  {
+    "emoji": "🫶",
+    "name": "aden + anais Classic Muslin Swaddle Blankets (4-Pack)",
+    "desc": "Extremely thin cotton blankets that somehow <em>every hospital nurse uses to swaddle babies.</em> You will own twelve of these by the end of the first month and still need more.",
+    "price": 49.99
+  },
+  {
+    "emoji": "🔋",
+    "name": "Graco Simple Sway Swing",
+    "desc": "A plug-in baby swing with 6 speeds and nature sounds that <em>does not require D batteries,</em> which is the single most important feature and not mentioned until page 4 of the manual.",
+    "price": 99.0
+  },
+  {
+    "emoji": "🫙",
+    "name": "Kiinde Twist Breastmilk Storage Pouches (20-Pack)",
+    "desc": "Pre-sterilized pouches that <em>attach directly to a breast pump and then to a bottle</em> with zero transfer. The whole system is one continuous sealed loop. Engineers designed this. It shows.",
+    "price": 14.99
+  },
+  {
+    "emoji": "🦷",
+    "name": "Nuby Nite Nite Lullaby Light & Sound Soother",
+    "desc": "A plush elephant that plays <em>8 lullabies and glows softly</em> for 18 minutes then shuts off automatically. Has a star projector. Costs less than a dinner out. Does more than a dinner out.",
+    "price": 24.99
+  },
+  {
+    "emoji": "🏄",
+    "name": "Summer Infant Pop 'N Sit Portable Booster",
+    "desc": "A booster seat that <em>folds flat like a pop-up hamper</em> and fits in a diaper bag. For restaurants, grandma's house, camping, wherever. Parents who own this mention it constantly.",
+    "price": 44.99
   }
 ]
