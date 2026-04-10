@@ -273,12 +273,17 @@ async function joinRoom() {
   myRoom = code;
   const state = data.state;
 
-  // Add player to list
+  // Subscribe first so we're ready for game events
+  subscribeToGameState();
+
+  // Add player to list in DB
   const newPlayers = [...new Set([...(state.players || []), myName])];
   await sb.from('game_rooms').update({ state: { ...state, players: newPlayers }, updated_at: new Date().toISOString() }).eq('id', myRoom);
 
+  // Also broadcast join directly so host sees it instantly
+  await gameChannel.send({ type: 'broadcast', event: 'player_joined', payload: { name: myName } });
+
   document.getElementById('waiting-name').textContent = `Hi, ${myName}! 👋`;
-  subscribeToGameState();
 
   if (state.phase === 'guessing') {
     currentItemIdx = state.currentItem;
@@ -292,9 +297,10 @@ async function joinRoom() {
 
 function subscribeToGameState() {
   if (gameChannel) sb.removeChannel(gameChannel);
-  gameChannel = sb.channel(`room-state-${myRoom}`)
-    .on('postgres_changes', { event:'UPDATE', schema:'public', table:'game_rooms', filter:`id=eq.${myRoom}` }, payload => {
-      handleStateChange(payload.new.state);
+  // Use the SAME channel name as the host so broadcast messages flow between them
+  gameChannel = sb.channel(`room-${myRoom}`, { config: { broadcast: { self: false } } })
+    .on('broadcast', { event: 'game_event' }, ({ payload }) => {
+      handleStateChange(payload);
     })
     .subscribe();
 }
@@ -344,7 +350,15 @@ async function submitGuess() {
   err.textContent = '';
   myGuess = val;
 
-  await sb.from('player_guesses').upsert({
+  // Broadcast guess to host instantly (no replication needed)
+  await gameChannel.send({
+    type: 'broadcast',
+    event: 'player_guess',
+    payload: { player_name: myName, item_index: currentItemIdx, guess: val }
+  });
+
+  // Also persist to DB as backup
+  sb.from('player_guesses').upsert({
     room_id: myRoom,
     player_name: myName,
     item_index: currentItemIdx,
