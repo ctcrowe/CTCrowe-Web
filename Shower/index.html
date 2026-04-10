@@ -201,46 +201,25 @@ let currentItemIdx = -1;
 let myGuess = null;
 let gameChannel = null;
 
-// ── READ URL PARAMS ──
+// ── READ URL PARAMS (room code passed via QR) ──
 const urlParams = new URLSearchParams(window.location.search);
 const roomFromURL = urlParams.get('room');
-const urlFromURL  = urlParams.get('u');
-const keyFromURL  = urlParams.get('k');
 
-// ── ON LOAD: skip setup if creds are in URL or localStorage ──
-window.addEventListener('load', () => {
-  // Prefer URL params (from QR code), fall back to localStorage
-  const sbUrl = urlFromURL || localStorage.getItem('sb_url');
-  const sbKey = keyFromURL || localStorage.getItem('sb_key');
-
-  if (sbUrl && sbKey) {
-    // Save for convenience (so room-code-only joins work later too)
-    localStorage.setItem('sb_url', sbUrl);
-    localStorage.setItem('sb_key', sbKey);
-    try {
-      sb = supabase.createClient(sbUrl, sbKey);
-      if (roomFromURL) document.getElementById('room-code').value = roomFromURL.toUpperCase();
-      showScreen('join-screen');
-      return;
-    } catch(e) { /* fall through to setup */ }
-  }
-
-  // Only show setup screen if we have no creds at all
-  document.getElementById('sb-url').value = sbUrl || '';
-  document.getElementById('sb-key').value = sbKey || '';
-  showScreen('setup-screen');
-});
-
-function initWithSaved(url, key) {
+// ── LOAD CONFIG FROM config.json, THEN SHOW JOIN SCREEN ──
+window.addEventListener('load', async () => {
   try {
-    sb = supabase.createClient(url, key);
+    const res = await fetch('../ShowerHost/config.json?nc=' + Date.now());
+    if (!res.ok) throw new Error('config.json not found');
+    const cfg = await res.json();
+    sb = supabase.createClient(cfg.supabase_url, cfg.supabase_key);
+    if (roomFromURL) document.getElementById('room-code').value = roomFromURL.toUpperCase();
     showScreen('join-screen');
   } catch(e) {
-    localStorage.removeItem('sb_url');
-    localStorage.removeItem('sb_key');
+    // Fallback: show setup screen so user can enter manually
     showScreen('setup-screen');
+    document.getElementById('setup-error').textContent = 'Could not load config.json: ' + e.message;
   }
-}
+});
 
 function saveSetup() {
   const url = document.getElementById('sb-url').value.trim();
@@ -249,8 +228,6 @@ function saveSetup() {
   if (!url || !key) { err.textContent = 'Please fill both fields.'; return; }
   try {
     sb = supabase.createClient(url, key);
-    localStorage.setItem('sb_url', url);
-    localStorage.setItem('sb_key', key);
     err.textContent = '';
     showScreen('join-screen');
   } catch(e) {
