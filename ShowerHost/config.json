@@ -1,0 +1,5 @@
+{
+  "supabase_url": "https://YOUR_PROJECT.supabase.co",
+  "supabase_key": "YOUR_ANON_KEY",
+  "player_url": "https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPO/player.html"
+}
