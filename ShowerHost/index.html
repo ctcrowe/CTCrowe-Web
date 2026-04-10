@@ -437,8 +437,12 @@ function subscribeToPlayers() {
         updatePlayerChips(players);
       }
     })
-    .on('broadcast', { event: 'game_event' }, ({ payload }) => {
-      // host doesn't need to handle its own broadcasts
+    .on('broadcast', { event: 'player_guess' }, ({ payload }) => {
+      // Handle guesses arriving on the shared room channel
+      if (payload.item_index === currentItem) {
+        collectedGuesses[payload.player_name] = parseFloat(payload.guess);
+        renderGuessesList();
+      }
     })
     .subscribe();
 }
@@ -495,17 +499,12 @@ function loadItem() {
   pushGameState('guessing');
 }
 
-// ── SUBSCRIBE TO GUESSES via Broadcast ──
+// ── RESET GUESSES FOR NEW ROUND ──
+// The player_guess broadcast handler lives in subscribeToPlayers (on roomChannel).
+// This just clears state for the new item — currentItem is already updated before this is called.
 function subscribeToGuesses() {
-  if (guessChannel) sb.removeChannel(guessChannel);
-  guessChannel = sb.channel(`guesses-${roomId}`, { config: { broadcast: { self: false } } })
-    .on('broadcast', { event: 'player_guess' }, ({ payload }) => {
-      if (payload.item_index === currentItem) {
-        collectedGuesses[payload.player_name] = parseFloat(payload.guess);
-        renderGuessesList();
-      }
-    })
-    .subscribe();
+  collectedGuesses = {};
+  renderGuessesList();
 }
 
 function renderGuessesList() {
