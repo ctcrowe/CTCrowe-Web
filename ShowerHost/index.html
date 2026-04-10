@@ -197,32 +197,16 @@
 <div class="screen" id="config-screen">
   <div class="config-card">
     <div class="config-title">🍼 Baby Shower: Price Is Right!</div>
-    <div class="config-sub">Host Setup — connect your Supabase project to get started</div>
-
-    <div class="two-col">
-      <div class="field-row">
-        <div class="field-label">Supabase Project URL</div>
-        <input class="field-input" id="sb-url" placeholder="https://xxxx.supabase.co" />
-      </div>
-      <div class="field-row">
-        <div class="field-label">Supabase Anon Key</div>
-        <input class="field-input" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIs..." />
-      </div>
-    </div>
-
-    <div class="field-row">
-      <div class="field-label">Player Join URL <span style="color:#ffffff55;font-weight:600;text-transform:none;letter-spacing:0">(the URL where you'll host player.html)</span></div>
-      <input class="field-input" id="join-url" placeholder="e.g. https://yoursite.com/player.html  — or leave blank to show QR for same folder" />
-    </div>
+    <div class="config-sub" id="config-sub">Loading config…</div>
 
     <details style="margin-bottom:16px">
       <summary class="section-toggle">✏️ Customize item prices (update to today's Amazon prices)</summary>
       <div class="price-edit-grid" id="price-edit-grid"></div>
     </details>
 
-    <div id="config-error" style="color:var(--coral);font-weight:700;font-size:14px;margin-bottom:10px;display:none"></div>
+    <div id="config-error" style="font-weight:700;font-size:14px;margin-bottom:10px;display:none"></div>
     <div style="display:flex;gap:12px;flex-wrap:wrap">
-      <button class="btn btn-primary" onclick="initSupabase()">🚀 Create Game Room</button>
+      <button class="btn btn-primary" id="launch-btn" onclick="initSupabase()" disabled style="opacity:0.5">🚀 Create Game Room</button>
     </div>
   </div>
 
@@ -381,13 +365,40 @@ function genRoomCode() {
 }
 
 // ── INIT SUPABASE + CREATE ROOM ──
+// Config loaded from config.json
+let appConfig = null;
+
+async function loadConfig() {
+  const errEl = document.getElementById('config-error');
+  const subEl = document.getElementById('config-sub');
+  const btn = document.getElementById('launch-btn');
+  try {
+    const res = await fetch('config.json?nc=' + Date.now()); // cache-bust
+    if (!res.ok) throw new Error('config.json not found (HTTP ' + res.status + ')');
+    appConfig = await res.json();
+    if (!appConfig.supabase_url || appConfig.supabase_url.includes('YOUR_PROJECT')) {
+      throw new Error('config.json still has placeholder values — fill in your real credentials.');
+    }
+    subEl.textContent = '✅ Config loaded from config.json — ready to launch!';
+    subEl.style.color = 'var(--mint)';
+    btn.disabled = false;
+    btn.style.opacity = '1';
+  } catch(e) {
+    subEl.textContent = '⚠️ ' + e.message;
+    subEl.style.color = 'var(--coral)';
+    errEl.innerHTML = 'Make sure <code style="background:#ffffff11;padding:2px 6px;border-radius:4px">config.json</code> is in the same folder as this file and has your real Supabase credentials.';
+    errEl.style.color = 'var(--yellow)';
+    errEl.style.display = 'block';
+  }
+}
+
 async function initSupabase() {
-  const url = document.getElementById('sb-url').value.trim();
-  const key = document.getElementById('sb-key').value.trim();
+  if (!appConfig) { alert('Config not loaded yet — wait a moment and try again.'); return; }
+  const url = appConfig.supabase_url;
+  const key = appConfig.supabase_key;
+  const joinUrl = appConfig.player_url || '';
   const errEl = document.getElementById('config-error');
   errEl.style.display = 'none';
-
-  if (!url || !key) { errEl.textContent = 'Please enter both URL and anon key.'; errEl.style.display='block'; return; }
 
   // Read custom prices
   ITEMS.forEach((_, idx) => {
@@ -404,8 +415,7 @@ async function initSupabase() {
     if (error) throw error;
 
     // Build join URL — embed creds so players never need to enter them
-    let joinBase = document.getElementById('join-url').value.trim();
-    if (!joinBase) joinBase = window.location.href.replace('host.html','player.html');
+    let joinBase = joinUrl || window.location.href.replace('host.html','player.html');
     // Strip any existing query string from base, then add all params
     const joinBaseClean = joinBase.split('?')[0];
     const joinFull = joinBaseClean
@@ -519,7 +529,7 @@ function renderGuessesList() {
     const row = document.createElement('div');
     row.className = 'guess-row';
     if (collectedGuesses[p] !== undefined) {
-      row.innerHTML = `<span class="guess-player">${p}</span><span class="guess-amount">$${Number(collectedGuesses[p]).toFixed(2)} <span class="guess-submitted">✓</span></span>`;
+      row.innerHTML = `<span class="guess-player">${p}</span><span class="guess-amount"><span class="guess-submitted">✓ Locked in</span></span>`;
     } else {
       row.innerHTML = `<span class="guess-player">${p}</span><span class="guess-pending">thinking…</span>`;
     }
@@ -624,6 +634,9 @@ function fireFireworks() {
     }, i*18);
   }
 }
+
+// ── LOAD CONFIG FROM config.json ON PAGE LOAD ──
+loadConfig();
 
 // floating stars
 const starEmojis=['⭐','✨','🌟','💫'];
