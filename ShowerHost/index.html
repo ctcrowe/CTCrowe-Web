@@ -325,28 +325,7 @@ CREATE POLICY "public upsert guesses" ON player_guesses FOR UPDATE USING (true);
 </div>
 
 <script>
-const ITEMS = [
-  { emoji:'🪣', name:'Munchkin Sterilizer Microwave Bags', desc:'Throw your bottle parts in a ziplock-looking bag, nuke it for 90 seconds, and call it sterile. <em>Each bag is reusable up to 20 times</em> — because nothing says "parenting" like tracking your bag's use count.', price:11.99 },
-  { emoji:'🧊', name:'Frida Mom Postpartum Recovery Underwear', desc:'Hospital-grade mesh underwear sold as a <em>luxury product.</em> Stretchy, enormous, and according to every mother alive, the most comfortable thing they've ever worn. Humbling and iconic.', price:16.99 },
-  { emoji:'🔦', name:'Owlet Cam 2 Smart Baby Monitor', desc:'A 1080p HD camera that lets you watch your baby sleep <em>from your phone at 3am</em> instead of just... going back to sleep yourself. Includes night vision and cry detection.', price:99.00 },
-  { emoji:'🥶', name:'Fridababy DermaFrida The SkinSoother', desc:'A silicone brush that looks like a tiny waffle iron attachment <em>designed specifically to scrub cradle cap off your baby's head.</em> Sounds aggressive. Parents love it.', price:9.99 },
-  { emoji:'🛁', name:'Summer Infant Comfy Clean Deluxe Bather', desc:'A mesh sling that hangs over the sink so you can bathe a newborn with <em>both hands free and zero risk of dropping a slippery wet baby.</em> The name "Comfy Clean" is doing a lot of work here.', price:24.99 },
-  { emoji:'🎒', name:'Ergobaby Omni 360 Baby Carrier', desc:'A carrier with <em>four carrying positions</em> including facing out, facing in, hip, and back. Takes 20 minutes to figure out the first time. Then you never take it off.', price:180.00 },
-  { emoji:'🍼', name:'Dr. Brown's Anti-Colic Bottle Warmer', desc:'A warmer that uses <em>steam to heat bottles</em> to body temperature in under 4 minutes. Because apparently nobody has time to put a bottle in warm tap water anymore.', price:29.99 },
-  { emoji:'🧲', name:'Nanit Pro Smart Baby Monitor + Breathing Band', desc:'A camera that mounts above the crib AND a <em>little band the baby wears on their stomach</em> to detect breathing motion. For parents who want to turn anxiety into a subscription service.', price:299.95 },
-  { emoji:'🪑', name:'Boppy Newborn Lounger', desc:'A little foam nest that lets your baby lounge like a <em>tiny Roman emperor</em> while you do dishes. Recalled once, redesigned, still extremely popular. The drama only made it more famous.', price:44.99 },
-  { emoji:'🧻', name:'Water Wipes Original Baby Wipes', desc:'Wipes made from <em>99.9% water and a drop of fruit extract.</em> Yes, just water. In a wipe. Parents pay a premium for this. Dermatologists approve. Economics students weep.', price:21.99 },
-  { emoji:'🎵', name:'Hatch Rest 2nd Gen Sound Machine + Night Light', desc:'A smart sound machine and night light that you control <em>from your phone in bed</em> so you never have to get up to adjust the volume. Fully worth it. Completely ridiculous. Both.', price:89.99 },
-  { emoji:'🏋️', name:'Tummy Time Water Mat', desc:'An inflatable mat filled with water and floating sea creatures <em>designed to make tummy time less miserable</em> for everyone involved. Baby stares at fish. You eat breakfast.', price:16.99 },
-  { emoji:'🪥', name:'Baby Banana Bendable Training Toothbrush', desc:'A bright yellow toothbrush shaped like a banana that babies <em>hold and chew on themselves.</em> It's shaped like a banana. That's the whole product. 4.7 stars, 15,000 reviews.', price:8.99 },
-  { emoji:'🌡️', name:'Frida Baby 3-in-1 True Temp Thermometer', desc:'One thermometer that works <em>in the ear, on the forehead, AND rectally.</em> The box lists all three modes with equal enthusiasm. Comes with a color-coded fever alert.', price:44.99 },
-  { emoji:'💺', name:'Doona Infant Car Seat & Stroller', desc:'A car seat that <em>unfolds into a stroller</em> with the push of a button. No base swap, no transfer. Extremely clever. Also costs roughly as much as a used car.', price:550.00 },
-  { emoji:'🧴', name:'Mustela Foam Shampoo for Newborns', desc:'A no-rinse foam shampoo for babies who <em>don't have much hair yet</em> but apparently still need a $14 product for it. Smells incredible. Disappears in two weeks.', price:13.99 },
-  { emoji:'🪆', name:'Skip Hop Explore & More Baby's View 3-Stage Activity Center', desc:'An enormous plastic activity saucer with <em>26 ways to play,</em> a rotating seat, lights, music, and enough stimulation to mildly overwhelm an adult. Folds flat. Barely.', price:89.99 },
-  { emoji:'😴', name:'Snoo Smart Sleeper Bassinet', desc:'A bassinet that <em>automatically rocks and shushes your baby</em> when it detects crying, using an algorithm. Made by the guy who wrote "Happiest Baby on the Block." Costs more than most people's first car.', price:1695.00 },
-  { emoji:'🧤', name:'Copper Pearl Burp Cloths (6-Pack)', desc:'Burp cloths that are <em>thick, triple-layered, and actually absorbent</em> unlike the decorative rectangles that come in gift sets. Parents who own these talk about them unprompted at parties.', price:27.99 },
-  { emoji:'🚿', name:'Frida Baby 2-in-1 Postpartum Abs + Peri Bottle', desc:'A <em>curved squirt bottle</em> for postpartum recovery that is angled so you don't have to contort yourself. Simple concept. Life-changing execution. Every nurse recommends it.', price:14.99 },
-];
+let ITEMS = []; // loaded from items.json
 
 let sb = null;
 let roomId = null;
@@ -359,16 +338,17 @@ let roomChannel = null;
 let collectedGuesses = {};
 let gameActive = false;
 
-// ── BUILD PRICE EDIT GRID ──
-(function buildPriceGrid() {
+// ── BUILD PRICE EDIT GRID (called after items.json loads) ──
+function buildPriceGrid() {
   const pg = document.getElementById('price-edit-grid');
+  pg.innerHTML = '';
   ITEMS.forEach((item, idx) => {
     const d = document.createElement('div');
     d.className = 'edit-item';
     d.innerHTML = `<span class="edit-item-emoji">${item.emoji}</span><span class="edit-item-name">${item.name}</span><span style="color:#ffffff55;font-size:11px">$</span><input class="edit-price-input" id="eprice-${idx}" value="${item.price.toFixed(2)}" type="number" step="0.01" min="0.01">`;
     pg.appendChild(d);
   });
-})();
+}
 
 function genRoomCode() {
   return Math.random().toString(36).substring(2,6).toUpperCase();
@@ -383,20 +363,27 @@ async function loadConfig() {
   const subEl = document.getElementById('config-sub');
   const btn = document.getElementById('launch-btn');
   try {
-    const res = await fetch('config.json?nc=' + Date.now()); // cache-bust
-    if (!res.ok) throw new Error('config.json not found (HTTP ' + res.status + ')');
-    appConfig = await res.json();
+    const nc = '?nc=' + Date.now();
+    const [cfgRes, itemsRes] = await Promise.all([
+      fetch('config.json' + nc),
+      fetch('items.json' + nc)
+    ]);
+    if (!cfgRes.ok) throw new Error('config.json not found (HTTP ' + cfgRes.status + ')');
+    if (!itemsRes.ok) throw new Error('items.json not found (HTTP ' + itemsRes.status + ')');
+    appConfig = await cfgRes.json();
+    const allItems = await itemsRes.json();
     if (!appConfig.supabase_url || appConfig.supabase_url.includes('YOUR_PROJECT')) {
       throw new Error('config.json still has placeholder values — fill in your real credentials.');
     }
-    subEl.textContent = '✅ Config loaded from config.json — ready to launch!';
+    buildPriceGrid(); // rebuild now that ITEMS is loaded
+    subEl.textContent = '✅ Config + ' + ITEMS.length + ' items loaded — ready to launch!';
     subEl.style.color = 'var(--mint)';
     btn.disabled = false;
     btn.style.opacity = '1';
   } catch(e) {
     subEl.textContent = '⚠️ ' + e.message;
     subEl.style.color = 'var(--coral)';
-    errEl.innerHTML = 'Make sure <code style="background:#ffffff11;padding:2px 6px;border-radius:4px">config.json</code> is in the same folder as this file and has your real Supabase credentials.';
+    errEl.innerHTML = 'Make sure <code style="background:#ffffff11;padding:2px 6px;border-radius:4px">config.json</code> and <code style="background:#ffffff11;padding:2px 6px;border-radius:4px">items.json</code> are in the same folder as this file.';
     errEl.style.color = 'var(--yellow)';
     errEl.style.display = 'block';
   }
@@ -420,7 +407,16 @@ async function initSupabase() {
     sb = supabase.createClient(url, key);
     roomId = genRoomCode();
 
-    const gameState = { phase: 'lobby', players: [], currentItem: 0, scores: {}, itemPrices };
+    // Store the selected item indices so all players load the same subset
+    const selectedIndices = allItems
+      .map((_, i) => i)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 20);
+    ITEMS = selectedIndices.map(i => allItems[i]);
+    itemPrices = ITEMS.map(i => i.price);
+    buildPriceGrid();
+
+    const gameState = { phase: 'lobby', players: [], currentItem: 0, scores: {}, itemPrices, selectedIndices };
     const { error } = await sb.from('game_rooms').insert({ id: roomId, state: gameState });
     if (error) throw error;
 
