@@ -208,16 +208,22 @@ const roomFromURL = urlParams.get('room');
 // ── LOAD CONFIG FROM config.json, THEN SHOW JOIN SCREEN ──
 window.addEventListener('load', async () => {
   try {
-    const res = await fetch('../ShowerHost/config.json?nc=' + Date.now());
-    if (!res.ok) throw new Error('config.json not found');
-    const cfg = await res.json();
+    const nc = '?nc=' + Date.now();
+    const [cfgRes, itemsRes] = await Promise.all([
+      fetch('../ShowerHost/config.json' + nc),
+      fetch('../ShowerHost/items.json' + nc)
+    ]);
+    if (!cfgRes.ok) throw new Error('config.json not found');
+    if (!itemsRes.ok) throw new Error('items.json not found');
+    const cfg = await cfgRes.json();
+    allItemsPool = await itemsRes.json();
+    // Don't shuffle yet — we'll apply the host's selectedIndices once we join the room
     sb = supabase.createClient(cfg.supabase_url, cfg.supabase_key);
     if (roomFromURL) document.getElementById('room-code').value = roomFromURL.toUpperCase();
     showScreen('join-screen');
   } catch(e) {
-    // Fallback: show setup screen so user can enter manually
     showScreen('setup-screen');
-    document.getElementById('setup-error').textContent = 'Could not load config.json: ' + e.message;
+    document.getElementById('setup-error').textContent = 'Could not load config: ' + e.message;
   }
 });
 
@@ -249,6 +255,11 @@ async function joinRoom() {
   myName = name;
   myRoom = code;
   const state = data.state;
+
+  // Apply the host's item selection so we're in sync
+  if (state.selectedIndices && allItemsPool.length) {
+    ITEMS = state.selectedIndices.map(i => allItemsPool[i]);
+  }
 
   // Subscribe first so we're ready for game events
   subscribeToGameState();
@@ -296,28 +307,8 @@ function handleStateChange(state) {
   }
 }
 
-const ITEMS = [
-  { emoji:'🪣', name:'Munchkin Sterilizer Microwave Bags', desc:'Throw bottle parts in a bag, nuke for 90 seconds. <em>Each bag reusable up to 20 times</em> — parenting means tracking your bag's use count.' },
-  { emoji:'🧊', name:'Frida Mom Postpartum Recovery Underwear', desc:'Hospital-grade mesh underwear sold as a <em>luxury product.</em> Enormous, stretchy, and every mother says it's the best thing they've ever worn.' },
-  { emoji:'🔦', name:'Owlet Cam 2 Smart Baby Monitor', desc:'1080p HD camera so you can watch your baby sleep <em>from your phone at 3am</em> instead of sleeping yourself. Has night vision and cry detection.' },
-  { emoji:'🥶', name:'Fridababy DermaFrida The SkinSoother', desc:'A silicone brush that looks like a waffle iron <em>designed to scrub cradle cap off baby's head.</em> Sounds aggressive. Parents love it.' },
-  { emoji:'🛁', name:'Summer Infant Comfy Clean Deluxe Bather', desc:'A mesh sling over the sink so you can bathe a newborn <em>with both hands free.</em> The name "Comfy Clean" is doing a lot of work.' },
-  { emoji:'🎒', name:'Ergobaby Omni 360 Baby Carrier', desc:'Four carrying positions. Takes 20 minutes to figure out the first time. <em>Then you never take it off.</em>' },
-  { emoji:'🍼', name:'Dr. Brown's Anti-Colic Bottle Warmer', desc:'Uses steam to heat bottles to body temperature <em>in under 4 minutes.</em> Because warm tap water is apparently too slow now.' },
-  { emoji:'🧲', name:'Nanit Pro Smart Baby Monitor + Breathing Band', desc:'A camera AND <em>a band baby wears on their stomach</em> to detect breathing. Turns parental anxiety into a subscription service.' },
-  { emoji:'🪑', name:'Boppy Newborn Lounger', desc:'A foam nest that lets your baby lounge like <em>a tiny Roman emperor</em> while you do dishes.' },
-  { emoji:'🧻', name:'Water Wipes Original Baby Wipes', desc:'Wipes made from <em>99.9% water and a drop of fruit extract.</em> Just water. In a wipe. Dermatologists love it. Economists do not.' },
-  { emoji:'🎵', name:'Hatch Rest 2nd Gen Sound Machine + Night Light', desc:'Smart sound machine you control <em>from your phone in bed</em> so you never have to get up. Fully worth it. Completely ridiculous. Both.' },
-  { emoji:'🏋️', name:'Tummy Time Water Mat', desc:'An inflatable water mat with floating sea creatures <em>to make tummy time less miserable.</em> Baby stares at fish. You eat breakfast.' },
-  { emoji:'🪥', name:'Baby Banana Bendable Training Toothbrush', desc:'A toothbrush <em>shaped like a banana</em> that babies chew on. That's it. 4.7 stars, 15,000 reviews.' },
-  { emoji:'🌡️', name:'Frida Baby 3-in-1 True Temp Thermometer', desc:'Works in the ear, on the forehead, <em>and rectally.</em> The box lists all three with equal enthusiasm.' },
-  { emoji:'💺', name:'Doona Infant Car Seat & Stroller', desc:'A car seat that <em>unfolds into a stroller</em> with one button. No transfer needed. Also costs roughly as much as a used car.' },
-  { emoji:'🧴', name:'Mustela Foam Shampoo for Newborns', desc:'No-rinse foam shampoo for babies <em>who don't have much hair yet</em> but apparently still need a specialty product. Smells amazing.' },
-  { emoji:'🪆', name:'Skip Hop Explore & More Activity Center', desc:'An enormous saucer with <em>26 ways to play,</em> lights, music, and enough stimulation to overwhelm an adult. Folds flat. Barely.' },
-  { emoji:'😴', name:'Snoo Smart Sleeper Bassinet', desc:'Automatically rocks and shushes your baby <em>using an algorithm.</em> Made by the "Happiest Baby" guy. Costs more than some cars.' },
-  { emoji:'🧤', name:'Copper Pearl Burp Cloths (6-Pack)', desc:'Triple-layered, actually absorbent burp cloths. <em>Parents who own these mention them unprompted at parties.</em>' },
-  { emoji:'🚿', name:'Frida Baby Peri Bottle', desc:'An angled squirt bottle for postpartum recovery <em>so you don't have to contort yourself.</em> Simple concept. Every nurse recommends it.' },
-];
+let ITEMS = []; // loaded from items.json
+let allItemsPool = []; // full 50-item pool
 
 function loadGuessScreen(idx, itemPrices) {
   const item = ITEMS[idx];
