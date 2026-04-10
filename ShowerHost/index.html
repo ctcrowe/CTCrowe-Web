@@ -430,10 +430,15 @@ async function initSupabase() {
 
 // ── SUBSCRIBE TO PLAYER JOINS ──
 function subscribeToPlayers() {
-  roomChannel = sb.channel(`room-${roomId}`)
-    .on('postgres_changes', { event:'UPDATE', schema:'public', table:'game_rooms', filter:`id=eq.${roomId}` }, payload => {
-      const state = payload.new.state;
-      if (state.players) updatePlayerChips(state.players);
+  roomChannel = sb.channel(`room-${roomId}`, { config: { broadcast: { self: false } } })
+    .on('broadcast', { event: 'player_joined' }, ({ payload }) => {
+      if (!players.includes(payload.name)) {
+        players.push(payload.name);
+        updatePlayerChips(players);
+      }
+    })
+    .on('broadcast', { event: 'game_event' }, ({ payload }) => {
+      // host doesn't need to handle its own broadcasts
     })
     .subscribe();
 }
@@ -470,6 +475,10 @@ async function startGame() {
 async function pushGameState(phase, extra = {}) {
   const state = { phase, players, currentItem, scores, itemPrices, ...extra };
   await sb.from('game_rooms').update({ state, updated_at: new Date().toISOString() }).eq('id', roomId);
+  // Also broadcast directly so players get it instantly without needing replication
+  if (roomChannel) {
+    await roomChannel.send({ type: 'broadcast', event: 'game_event', payload: state });
+  }
 }
 
 // ── LOAD ITEM ──
@@ -486,19 +495,13 @@ function loadItem() {
   pushGameState('guessing');
 }
 
-// ── SUBSCRIBE TO GUESSES ──
+// ── SUBSCRIBE TO GUESSES via Broadcast ──
 function subscribeToGuesses() {
   if (guessChannel) sb.removeChannel(guessChannel);
-  guessChannel = sb.channel(`guesses-${roomId}-${currentItem}`)
-    .on('postgres_changes', { event:'INSERT', schema:'public', table:'player_guesses', filter:`room_id=eq.${roomId}` }, payload => {
-      if (payload.new.item_index === currentItem) {
-        collectedGuesses[payload.new.player_name] = parseFloat(payload.new.guess);
-        renderGuessesList();
-      }
-    })
-    .on('postgres_changes', { event:'UPDATE', schema:'public', table:'player_guesses', filter:`room_id=eq.${roomId}` }, payload => {
-      if (payload.new.item_index === currentItem) {
-        collectedGuesses[payload.new.player_name] = parseFloat(payload.new.guess);
+  guessChannel = sb.channel(`guesses-${roomId}`, { config: { broadcast: { self: false } } })
+    .on('broadcast', { event: 'player_guess' }, ({ payload }) => {
+      if (payload.item_index === currentItem) {
+        collectedGuesses[payload.player_name] = parseFloat(payload.guess);
         renderGuessesList();
       }
     })
