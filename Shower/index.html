@@ -201,24 +201,34 @@ let currentItemIdx = -1;
 let myGuess = null;
 let gameChannel = null;
 
-// ── AUTO-FILL FROM URL PARAMS ──
+// ── READ URL PARAMS ──
 const urlParams = new URLSearchParams(window.location.search);
 const roomFromURL = urlParams.get('room');
+const urlFromURL  = urlParams.get('u');
+const keyFromURL  = urlParams.get('k');
 
-// ── CHECK LOCAL STORAGE FOR SAVED CREDS ──
+// ── ON LOAD: skip setup if creds are in URL or localStorage ──
 window.addEventListener('load', () => {
-  const savedUrl = localStorage.getItem('sb_url');
-  const savedKey = localStorage.getItem('sb_key');
-  if (savedUrl && savedKey) {
-    document.getElementById('sb-url').value = savedUrl;
-    document.getElementById('sb-key').value = savedKey;
-    initWithSaved(savedUrl, savedKey);
-  } else {
-    showScreen('setup-screen');
+  // Prefer URL params (from QR code), fall back to localStorage
+  const sbUrl = urlFromURL || localStorage.getItem('sb_url');
+  const sbKey = keyFromURL || localStorage.getItem('sb_key');
+
+  if (sbUrl && sbKey) {
+    // Save for convenience (so room-code-only joins work later too)
+    localStorage.setItem('sb_url', sbUrl);
+    localStorage.setItem('sb_key', sbKey);
+    try {
+      sb = supabase.createClient(sbUrl, sbKey);
+      if (roomFromURL) document.getElementById('room-code').value = roomFromURL.toUpperCase();
+      showScreen('join-screen');
+      return;
+    } catch(e) { /* fall through to setup */ }
   }
-  if (roomFromURL) {
-    document.getElementById('room-code').value = roomFromURL.toUpperCase();
-  }
+
+  // Only show setup screen if we have no creds at all
+  document.getElementById('sb-url').value = sbUrl || '';
+  document.getElementById('sb-key').value = sbKey || '';
+  showScreen('setup-screen');
 });
 
 function initWithSaved(url, key) {
