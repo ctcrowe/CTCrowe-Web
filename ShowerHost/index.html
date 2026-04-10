@@ -403,13 +403,18 @@ async function initSupabase() {
     const { error } = await sb.from('game_rooms').insert({ id: roomId, state: gameState });
     if (error) throw error;
 
-    // Build join URL
+    // Build join URL — embed creds so players never need to enter them
     let joinBase = document.getElementById('join-url').value.trim();
     if (!joinBase) joinBase = window.location.href.replace('host.html','player.html');
-    const joinFull = joinBase.includes('?') ? joinBase : joinBase + '?room=' + roomId;
+    // Strip any existing query string from base, then add all params
+    const joinBaseClean = joinBase.split('?')[0];
+    const joinFull = joinBaseClean
+      + '?room=' + encodeURIComponent(roomId)
+      + '&u=' + encodeURIComponent(url)
+      + '&k=' + encodeURIComponent(key);
 
     document.getElementById('lobby-code').textContent = roomId;
-    document.getElementById('lobby-join-url').textContent = joinBase.replace(/https?:\/\//,'').split('?')[0];
+    document.getElementById('lobby-join-url').textContent = joinBaseClean.replace(/https?:\/\//,'');
 
     // QR code
     document.getElementById('qrcode').innerHTML = '';
