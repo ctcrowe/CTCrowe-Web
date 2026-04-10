@@ -228,6 +228,34 @@
 
   <div class="config-card" style="max-width:860px;margin-top:0">
     <div style="color:var(--yellow);font-weight:900;font-size:clamp(13px,1.4vw,16px);margin-bottom:10px">📋 One-time Supabase Setup (run this SQL once in your Supabase SQL editor)</div>
+    <pre style="background:#0d0d1a;border-radius:12px;padding:14px;color:#4ECDC4;font-size:clamp(10px,1.1vw,13px);overflow-x:auto;line-height:1.6;white-space:pre-wrap">-- Run this in Supabase SQL Editor → New Query
+
+CREATE TABLE IF NOT EXISTS game_rooms (
+  id TEXT PRIMARY KEY,
+  state JSONB NOT NULL DEFAULT '{}',
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS player_guesses (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  room_id TEXT NOT NULL,
+  player_name TEXT NOT NULL,
+  item_index INTEGER NOT NULL,
+  guess NUMERIC NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(room_id, player_name, item_index)
+);
+
+ALTER TABLE game_rooms ENABLE ROW LEVEL SECURITY;
+ALTER TABLE player_guesses ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "public read rooms" ON game_rooms FOR SELECT USING (true);
+CREATE POLICY "public update rooms" ON game_rooms FOR UPDATE USING (true);
+CREATE POLICY "public insert rooms" ON game_rooms FOR INSERT WITH CHECK (true);
+CREATE POLICY "public read guesses" ON player_guesses FOR SELECT USING (true);
+CREATE POLICY "public insert guesses" ON player_guesses FOR INSERT WITH CHECK (true);
+CREATE POLICY "public upsert guesses" ON player_guesses FOR UPDATE USING (true);</pre>
+  </div>
 </div>
 
 <!-- ══ LOBBY SCREEN ══ -->
