@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🍼 Baby Shower: Price Is Right!</title>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --yellow: #FFD93D; --pink: #FF6B9D; --mint: #4ECDC4;
+    --coral: #FF6B6B; --purple: #C77DFF; --navy: #1a1a2e; --white: #FFFDF7;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  body {
+    background: var(--navy);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100dvh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 20px;
+    overflow: hidden;
+  }
+
+  .bg {
+    position: fixed; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse at 30% 20%, #3a1a5e 0%, var(--navy) 65%);
+  }
+
+  .screen { width: 100%; max-width: 440px; display: flex; flex-direction: column; align-items: center; gap: 18px; position: relative; z-index: 1; transition: opacity 0.35s, transform 0.35s; }
+  .screen.hidden { opacity: 0; pointer-events: none; transform: scale(0.96); position: absolute; }
+
+  .logo { font-family: 'Lilita One', cursive; font-size: 36px; background: linear-gradient(135deg, var(--yellow), var(--pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; line-height: 1.1; }
+  .sub { color: #ffffffbb; font-size: 15px; font-weight: 700; text-align: center; }
+
+  .card { background: linear-gradient(145deg, #1e1e3f, #2a1a4e); border: 2px solid #ffffff22; border-radius: 22px; padding: 22px; width: 100%; }
+
+  .field-label { color: var(--mint); font-weight: 900; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .field-input { background: #ffffff0d; border: 2px solid #ffffff22; border-radius: 12px; color: white; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 16px; padding: 12px 16px; width: 100%; outline: none; transition: border-color 0.2s; -webkit-appearance: none; }
+  .field-input:focus { border-color: var(--yellow); }
+  .field-input.room-input { font-family: 'Lilita One', cursive; font-size: 32px; letter-spacing: 8px; text-align: center; text-transform: uppercase; }
+
+  .btn { font-family: 'Lilita One', cursive; font-size: 22px; padding: 16px 36px; border: none; border-radius: 999px; cursor: pointer; transition: transform 0.12s; width: 100%; letter-spacing: 0.5px; }
+  .btn:active { transform: scale(0.96); }
+  .btn-primary { background: linear-gradient(135deg, var(--yellow), var(--coral)); color: var(--navy); box-shadow: 0 6px 24px #FFD93D44; }
+  .btn-submit { background: linear-gradient(135deg, var(--mint), var(--purple)); color: white; box-shadow: 0 6px 24px #4ECDC444; }
+  .btn-change { background: #ffffff11; border: 2px solid #ffffff22; color: #ffffffbb; font-size: 15px; padding: 10px 20px; width: auto; border-radius: 999px; }
+
+  /* SETUP — Supabase config (hidden after first use via localStorage) */
+  #setup-screen { gap: 14px; }
+  .setup-note { color: #ffffff66; font-size: 12px; text-align: center; line-height: 1.5; }
+
+  /* JOIN SCREEN */
+  #join-screen { gap: 14px; }
+
+  /* WAITING SCREEN */
+  #waiting-screen { gap: 18px; }
+  .avatar { font-size: 72px; text-align: center; animation: float 2.5s ease-in-out infinite; }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+  .waiting-name { font-family: 'Lilita One', cursive; font-size: 28px; color: white; text-align: center; }
+  .waiting-status { color: #ffffffaa; font-size: 15px; text-align: center; font-weight: 700; }
+  .pulse-dots { display: flex; gap: 6px; justify-content: center; margin-top: 4px; }
+  .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mint); animation: dotPulse 1.2s ease-in-out infinite; }
+  .pulse-dot:nth-child(2) { animation-delay: 0.2s; }
+  .pulse-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes dotPulse { 0%,100%{transform:scale(0.6);opacity:0.4} 50%{transform:scale(1);opacity:1} }
+
+  /* GUESSING SCREEN */
+  #guess-screen { gap: 14px; }
+  .item-pill { background: var(--purple); color: white; font-weight: 900; font-size: 12px; padding: 4px 14px; border-radius: 999px; text-transform: uppercase; letter-spacing: 1px; align-self: flex-start; }
+  .item-emoji-big { font-size: 72px; text-align: center; display: block; animation: float 3s ease-in-out infinite; }
+  .item-name-phone { font-family: 'Lilita One', cursive; font-size: 22px; color: white; text-align: center; line-height: 1.2; }
+  .item-desc-phone { font-size: 13px; color: #ffffffaa; text-align: center; line-height: 1.5; font-weight: 600; }
+  .item-desc-phone em { color: var(--yellow); font-style: normal; }
+
+  .price-input-wrap { position: relative; width: 100%; }
+  .dollar-prefix { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--yellow); font-family: 'Lilita One', cursive; font-size: 28px; pointer-events: none; }
+  .price-field { font-family: 'Lilita One', cursive; font-size: 36px; padding: 18px 18px 18px 48px; text-align: center; letter-spacing: 2px; color: white; background: #ffffff0d; border: 2px solid #ffffff22; border-radius: 16px; width: 100%; outline: none; -webkit-appearance: none; transition: border-color 0.2s; }
+  .price-field:focus { border-color: var(--yellow); }
+  .price-field::placeholder { color: #ffffff33; }
+
+  /* SUBMITTED SCREEN */
+  #submitted-screen { gap: 16px; }
+  .submitted-emoji { font-size: 80px; text-align: center; animation: submittedBounce 0.5s cubic-bezier(.2,1.8,.4,1) forwards; }
+  @keyframes submittedBounce { from{transform:scale(0)} to{transform:scale(1)} }
+  .submitted-title { font-family: 'Lilita One', cursive; font-size: 32px; color: var(--yellow); text-align: center; }
+  .submitted-amount { font-family: 'Lilita One', cursive; font-size: 48px; color: white; text-align: center; }
+  .submitted-sub { color: #ffffffaa; font-size: 15px; text-align: center; font-weight: 700; }
+  .change-row { display: flex; justify: center; }
+
+  /* REVEAL SCREEN (phone) */
+  #phone-reveal-screen { gap: 14px; }
+  .phone-result-card { width: 100%; border-radius: 18px; padding: 18px; text-align: center; }
+  .phone-result-card.winner { background: linear-gradient(135deg, #FFD93D22, #FF6B9D22); border: 2px solid var(--yellow); }
+  .phone-result-card.loser { background: #ffffff0d; border: 2px solid #ffffff1a; }
+  .phone-result-emoji { font-size: 56px; margin-bottom: 8px; }
+  .phone-result-msg { font-family: 'Lilita One', cursive; font-size: 26px; color: white; margin-bottom: 4px; }
+  .phone-result-detail { color: #ffffffaa; font-size: 14px; font-weight: 700; }
+  .actual-price-display { font-family: 'Lilita One', cursive; font-size: 22px; color: var(--yellow); margin-top: 6px; }
+
+  /* ERROR */
+  .error-msg { color: var(--coral); font-size: 13px; font-weight: 700; text-align: center; min-height: 18px; }
+</style>
+</head>
+<body>
+<div class="bg"></div>
+
+<!-- ══ SETUP SCREEN (enter Supabase creds) ══ -->
+<div class="screen" id="setup-screen">
+  <div class="logo">🍼 Price Is Right!</div>
+  <div class="sub">Baby Shower Edition</div>
+  <div class="card" style="display:flex;flex-direction:column;gap:12px">
+    <div>
+      <div class="field-label">Supabase Project URL</div>
+      <input class="field-input" id="sb-url" placeholder="https://xxxx.supabase.co" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    </div>
+    <div>
+      <div class="field-label">Supabase Anon Key</div>
+      <input class="field-input" id="sb-key" placeholder="eyJhbGci..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    </div>
+  </div>
+  <div class="error-msg" id="setup-error"></div>
+  <button class="btn btn-primary" onclick="saveSetup()">Continue →</button>
+  <div class="setup-note">These credentials are saved in your browser so you only need to enter them once.</div>
+</div>
+
+<!-- ══ JOIN SCREEN ══ -->
+<div class="screen hidden" id="join-screen">
+  <div class="logo">🍼 Price Is Right!</div>
+  <div class="sub">Baby Shower Edition</div>
+  <div class="card" style="display:flex;flex-direction:column;gap:14px">
+    <div>
+      <div class="field-label">Your Name</div>
+      <input class="field-input" id="player-name" placeholder="Enter your name" maxlength="18" autocomplete="off">
+    </div>
+    <div>
+      <div class="field-label">Room Code</div>
+      <input class="field-input room-input" id="room-code" placeholder="XXXX" maxlength="4" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
+    </div>
+  </div>
+  <div class="error-msg" id="join-error"></div>
+  <button class="btn btn-primary" onclick="joinRoom()">Join Game! 🎉</button>
+</div>
+
+<!-- ══ WAITING SCREEN ══ -->
+<div class="screen hidden" id="waiting-screen">
+  <div class="avatar">👶</div>
+  <div class="waiting-name" id="waiting-name">Hi, Player!</div>
+  <div class="waiting-status">Waiting for the host to start the game…</div>
+  <div class="pulse-dots"><div class="pulse-dot"></div><div class="pulse-dot"></div><div class="pulse-dot"></div></div>
+  <div class="card" style="text-align:center">
+    <div style="color:#ffffffbb;font-size:14px;line-height:1.6">Get ready to guess Amazon prices of <strong style="color:var(--yellow)">hilariously real</strong> baby products 🍼😂</div>
+  </div>
+</div>
+
+<!-- ══ GUESS SCREEN ══ -->
+<div class="screen hidden" id="guess-screen">
+  <span class="item-pill" id="g-round">Round 1</span>
+  <span class="item-emoji-big" id="g-emoji">🍼</span>
+  <div class="card" style="display:flex;flex-direction:column;gap:10px">
+    <div class="item-name-phone" id="g-name">Item name</div>
+    <div class="item-desc-phone" id="g-desc">Description</div>
+  </div>
+  <div class="price-input-wrap">
+    <span class="dollar-prefix">$</span>
+    <input class="price-field" id="price-input" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00">
+  </div>
+  <div class="error-msg" id="guess-error"></div>
+  <button class="btn btn-submit" onclick="submitGuess()">Lock In My Guess! 🔒</button>
+</div>
+
+<!-- ══ SUBMITTED SCREEN ══ -->
+<div class="screen hidden" id="submitted-screen">
+  <div class="submitted-emoji">🔒</div>
+  <div class="submitted-title">Guess Locked!</div>
+  <div class="submitted-amount" id="locked-amount">$0.00</div>
+  <div class="submitted-sub">Waiting for the host to reveal the price…</div>
+  <div class="pulse-dots"><div class="pulse-dot"></div><div class="pulse-dot"></div><div class="pulse-dot"></div></div>
+  <button class="btn btn-change" onclick="changeGuess()">✏️ Change my guess</button>
+</div>
+
+<!-- ══ PHONE REVEAL SCREEN ══ -->
+<div class="screen hidden" id="phone-reveal-screen">
+  <div class="phone-result-card" id="phone-result-card">
+    <div class="phone-result-emoji" id="phone-result-emoji">🎉</div>
+    <div class="phone-result-msg" id="phone-result-msg">You won!</div>
+    <div class="phone-result-detail" id="phone-result-detail">Your guess: $X.XX</div>
+    <div class="actual-price-display" id="phone-actual-price">Actual: $X.XX</div>
+  </div>
+  <div class="card" style="text-align:center">
+    <div style="color:#ffffffaa;font-size:14px">Next round coming up! 🎀</div>
+    <div class="pulse-dots" style="margin-top:8px"><div class="pulse-dot"></div><div class="pulse-dot"></div><div class="pulse-dot"></div></div>
+  </div>
+</div>
+
+<script>
+let sb = null;
+let myName = '';
+let myRoom = '';
+let currentItemIdx = -1;
+let myGuess = null;
+let gameChannel = null;
+
+// ── AUTO-FILL FROM URL PARAMS ──
+const urlParams = new URLSearchParams(window.location.search);
+const roomFromURL = urlParams.get('room');
+
+// ── CHECK LOCAL STORAGE FOR SAVED CREDS ──
+window.addEventListener('load', () => {
+  const savedUrl = localStorage.getItem('sb_url');
+  const savedKey = localStorage.getItem('sb_key');
+  if (savedUrl && savedKey) {
+    document.getElementById('sb-url').value = savedUrl;
+    document.getElementById('sb-key').value = savedKey;
+    initWithSaved(savedUrl, savedKey);
+  } else {
+    showScreen('setup-screen');
+  }
+  if (roomFromURL) {
+    document.getElementById('room-code').value = roomFromURL.toUpperCase();
+  }
+});
+
+function initWithSaved(url, key) {
+  try {
+    sb = supabase.createClient(url, key);
+    showScreen('join-screen');
+  } catch(e) {
+    localStorage.removeItem('sb_url');
+    localStorage.removeItem('sb_key');
+    showScreen('setup-screen');
+  }
+}
+
+function saveSetup() {
+  const url = document.getElementById('sb-url').value.trim();
+  const key = document.getElementById('sb-key').value.trim();
+  const err = document.getElementById('setup-error');
+  if (!url || !key) { err.textContent = 'Please fill both fields.'; return; }
+  try {
+    sb = supabase.createClient(url, key);
+    localStorage.setItem('sb_url', url);
+    localStorage.setItem('sb_key', key);
+    err.textContent = '';
+    showScreen('join-screen');
+  } catch(e) {
+    err.textContent = 'Invalid credentials.';
+  }
+}
+
+async function joinRoom() {
+  const name = document.getElementById('player-name').value.trim();
+  const code = document.getElementById('room-code').value.trim().toUpperCase();
+  const err = document.getElementById('join-error');
+  err.textContent = '';
+  if (!name) { err.textContent = 'Please enter your name.'; return; }
+  if (code.length !== 4) { err.textContent = 'Room code must be 4 characters.'; return; }
+
+  const { data, error } = await sb.from('game_rooms').select('state').eq('id', code).single();
+  if (error || !data) { err.textContent = 'Room not found. Check the code!'; return; }
+
+  myName = name;
+  myRoom = code;
+  const state = data.state;
+
+  // Add player to list
+  const newPlayers = [...new Set([...(state.players || []), myName])];
+  await sb.from('game_rooms').update({ state: { ...state, players: newPlayers }, updated_at: new Date().toISOString() }).eq('id', myRoom);
+
+  document.getElementById('waiting-name').textContent = `Hi, ${myName}! 👋`;
+  subscribeToGameState();
+
+  if (state.phase === 'guessing') {
+    currentItemIdx = state.currentItem;
+    loadGuessScreen(state.currentItem, state.itemPrices);
+  } else if (state.phase === 'revealed' || state.phase === 'reveal') {
+    showScreen('waiting-screen');
+  } else {
+    showScreen('waiting-screen');
+  }
+}
+
+function subscribeToGameState() {
+  if (gameChannel) sb.removeChannel(gameChannel);
+  gameChannel = sb.channel(`room-state-${myRoom}`)
+    .on('postgres_changes', { event:'UPDATE', schema:'public', table:'game_rooms', filter:`id=eq.${myRoom}` }, payload => {
+      handleStateChange(payload.new.state);
+    })
+    .subscribe();
+}
+
+function handleStateChange(state) {
+  if (state.phase === 'guessing') {
+    if (state.currentItem !== currentItemIdx) {
+      currentItemIdx = state.currentItem;
+      myGuess = null;
+      loadGuessScreen(state.currentItem, state.itemPrices);
+    }
+  } else if (state.phase === 'revealed') {
+    showRevealResult(state);
+  } else if (state.phase === 'lobby') {
+    showScreen('waiting-screen');
+  }
+}
+
+const ITEMS = [
+  { emoji:'🦆', name:'Mold-Free Rubber Duck Thermometer', desc:'A rubber duck that <em>tells you the bath temp</em> — because your elbow apparently can\'t be trusted.' },
+  { emoji:'🍑', name:'Frida Baby Windi Gas Passer', desc:'A tiny tube you insert... where the sun doesn\'t shine... to release trapped gas. <em>Yes, this is real.</em>' },
+  { emoji:'👃', name:'NoseFrida SnotSucker', desc:'You suck the snot out with <em>your own mouth.</em> There\'s a filter. They promise.' },
+  { emoji:'🎵', name:'Bluetooth Pregnancy Belly Headphones', desc:'Speakers for your bump so baby can enjoy <em>Mozart or whatever you\'re into.</em>' },
+  { emoji:'🤱', name:'Haakaa Manual Silicone Breast Pump', desc:'A silicone blob that collects milk <em>purely through suction and vibes.</em> 50,000+ ⭐ reviews.' },
+  { emoji:'💩', name:'Diaper Genie Complete Pail', desc:'A fancy trash can — but make it <em>specifically for poop.</em>' },
+  { emoji:'🌀', name:'Baby Shusher Sound Machine', desc:'A device that just <em>shushes your baby over and over</em> until they pass out.' },
+  { emoji:'🩺', name:'Owlet Dream Sock Baby Monitor', desc:'A WiFi sock that monitors heart rate and oxygen while baby sleeps. <em>Data for the worried parent.</em>' },
+  { emoji:'🪑', name:'4moms mamaRoo4 Infant Swing', desc:'A space-age swing with 5 motion settings. <em>Costs more than some car payments.</em>' },
+  { emoji:'🧴', name:'Frida Baby 3-in-1 Nose, Nail & Ear Picker', desc:'A full kit for <em>extracting things from your baby\'s face holes.</em>' },
+];
+
+function loadGuessScreen(idx, itemPrices) {
+  const item = ITEMS[idx];
+  document.getElementById('g-round').textContent = `Round ${idx+1} of ${ITEMS.length}`;
+  document.getElementById('g-emoji').textContent = item.emoji;
+  document.getElementById('g-name').textContent = item.name;
+  document.getElementById('g-desc').innerHTML = item.desc;
+  document.getElementById('price-input').value = '';
+  document.getElementById('guess-error').textContent = '';
+  showScreen('guess-screen');
+}
+
+async function submitGuess() {
+  const val = parseFloat(document.getElementById('price-input').value);
+  const err = document.getElementById('guess-error');
+  if (isNaN(val) || val <= 0) { err.textContent = 'Enter a price greater than $0!'; return; }
+  err.textContent = '';
+  myGuess = val;
+
+  await sb.from('player_guesses').upsert({
+    room_id: myRoom,
+    player_name: myName,
+    item_index: currentItemIdx,
+    guess: val
+  }, { onConflict: 'room_id,player_name,item_index' });
+
+  document.getElementById('locked-amount').textContent = `$${val.toFixed(2)}`;
+  showScreen('submitted-screen');
+}
+
+function changeGuess() {
+  showScreen('guess-screen');
+}
+
+function showRevealResult(state) {
+  if (currentItemIdx < 0) return;
+  const actualPrice = (state.itemPrices || [])[currentItemIdx] || 0;
+  const myG = myGuess ?? 0;
+  const diff = myG - actualPrice;
+  const card = document.getElementById('phone-result-card');
+
+  // Determine if I won (same logic as host)
+  const guessesForItem = {}; // We don't have all guesses on phone, so just show personal result
+  const isWinner = state.scores && (state.scores[myName] > (Object.keys(state.scores).filter(p=>p!==myName).reduce((max,p)=>Math.max(max,state.scores[p]??0),0)));
+
+  // Simpler: just show if I was close
+  let emoji, msg, detail, cardClass;
+  if (diff === 0) { emoji='🎯'; msg='EXACT PRICE!'; detail=`You nailed it at $${myG.toFixed(2)}`; cardClass='winner'; }
+  else if (diff > 0) { emoji='😬'; msg='Over budget!'; detail=`You guessed $${myG.toFixed(2)} — $${diff.toFixed(2)} too high`; cardClass='loser'; }
+  else { emoji='🤏'; msg='So close!'; detail=`You guessed $${myG.toFixed(2)} — $${Math.abs(diff).toFixed(2)} under`; cardClass='winner'; }
+
+  card.className = `phone-result-card ${cardClass}`;
+  document.getElementById('phone-result-emoji').textContent = emoji;
+  document.getElementById('phone-result-msg').textContent = msg;
+  document.getElementById('phone-result-detail').textContent = detail;
+  document.getElementById('phone-actual-price').textContent = `Actual Amazon price: $${actualPrice.toFixed(2)}`;
+  showScreen('phone-reveal-screen');
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.id === id ? s.classList.remove('hidden') : s.classList.add('hidden'));
+}
+</script>
+</body>
+</html>
