@@ -325,7 +325,8 @@ CREATE POLICY "public upsert guesses" ON player_guesses FOR UPDATE USING (true);
 </div>
 
 <script>
-let ITEMS = []; // loaded from items.json
+let ITEMS = []; // the 20 randomly selected items for this game
+let allItemsPool = []; // full 50-item pool loaded from items.json
 
 let sb = null;
 let roomId = null;
@@ -371,12 +372,11 @@ async function loadConfig() {
     if (!cfgRes.ok) throw new Error('config.json not found (HTTP ' + cfgRes.status + ')');
     if (!itemsRes.ok) throw new Error('items.json not found (HTTP ' + itemsRes.status + ')');
     appConfig = await cfgRes.json();
-    const allItems = await itemsRes.json();
+    allItemsPool = await itemsRes.json();
     if (!appConfig.supabase_url || appConfig.supabase_url.includes('YOUR_PROJECT')) {
       throw new Error('config.json still has placeholder values — fill in your real credentials.');
     }
-    buildPriceGrid(); // rebuild now that ITEMS is loaded
-    subEl.textContent = '✅ Config + ' + ITEMS.length + ' items loaded — ready to launch!';
+    subEl.textContent = '✅ Config + ' + allItemsPool.length + ' items loaded — ready to launch!';
     subEl.style.color = 'var(--mint)';
     btn.disabled = false;
     btn.style.opacity = '1';
@@ -408,11 +408,11 @@ async function initSupabase() {
     roomId = genRoomCode();
 
     // Store the selected item indices so all players load the same subset
-    const selectedIndices = allItems
+    const selectedIndices = allItemsPool
       .map((_, i) => i)
       .sort(() => Math.random() - 0.5)
       .slice(0, 20);
-    ITEMS = selectedIndices.map(i => allItems[i]);
+    ITEMS = selectedIndices.map(i => allItemsPool[i]);
     itemPrices = ITEMS.map(i => i.price);
     buildPriceGrid();
 
